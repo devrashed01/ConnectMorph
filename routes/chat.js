@@ -62,4 +62,38 @@ route.post("/", auth, async (req, res) => {
   res.json(savedChat);
 });
 
+// @route POST api/chat/:id/message
+// @desc Create a message
+// @access Private
+route.post("/:id/message", auth, async (req, res) => {
+  const { id } = req.params;
+  const { content } = req.body;
+
+  if (!content) {
+    return res.status(400).json({ error: "Content is required" });
+  }
+
+  const chat = await Chat.findOne({
+    _id: id,
+    participants: req.user._id,
+  });
+
+  if (!chat) {
+    return res.status(404).json({ error: "Chat not found" });
+  }
+
+  const newMessage = new Message({
+    content,
+    sender: req.user._id,
+  });
+
+  const savedMessage = await newMessage.save();
+
+  chat.messages.push(savedMessage._id);
+
+  await chat.save();
+
+  res.json(savedMessage);
+});
+
 module.exports = route;
