@@ -65,28 +65,25 @@ router.post(
     // check for errors
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(400).json({ errors: errors.array() });
+      return res
+        .status(400)
+        .json({ errors: errors.array(), message: "Invalid credentials" });
 
     // destructure request body
     const { email, password } = req.body;
 
     // check if user exists
     let user = await User.findOne({ email });
-    if (!user)
-      return res
-        .status(400)
-        .json({ errors: [{ message: "Invalid credentials" }] });
+    if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
     // check if password matches
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return res
-        .status(400)
-        .json({ errors: [{ message: "Invalid credentials" }] });
+      return res.status(400).json({ message: "Invalid credentials" });
 
     // return jsonwebtoken
     const token = user.generateAuthToken();
-    res.json({ token });
+    res.json({ token, message: "Login successful" });
   }
 );
 
