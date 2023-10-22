@@ -47,7 +47,8 @@ router.get("/timeline", auth, async (req, res) => {
   const posts = await Post.find(query)
     .populate("author", "username name avatar")
     .populate("likes")
-    .populate("comments");
+    .populate("comments")
+    .sort({ createdAt: -1 });
   res.json(posts);
 });
 
