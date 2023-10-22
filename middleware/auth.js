@@ -9,7 +9,13 @@ module.exports = async (req, res, next) => {
       .json({ message: "Please provide a valid token", success: false });
   }
 
-  const decoded = await jwt.verify(token, process.env.JWT_SECRET);
-  req.user = decoded;
+  try {
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+  } catch (error) {
+    return res
+      .status(401)
+      .json({ message: "Please provide a valid token", success: false });
+  }
   return next();
 };

@@ -12,6 +12,7 @@ const { USER_PUBLIC_ENTRIES } = require("../constants/entries");
 // @access Private
 router.get("/", auth, async (req, res) => {
   const user = await User.findById(req.user._id).select("-password");
+  if (!user) return res.status(400).json({ message: "User not found" });
   res.json(user);
 });
 
