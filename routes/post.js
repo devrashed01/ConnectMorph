@@ -3,6 +3,7 @@ const router = express.Router();
 const Post = require("../models/Post");
 const auth = require("../middleware/auth");
 const { body, validationResult } = require("express-validator");
+const User = require("../models/User");
 
 // @route POST api/post
 // @desc Create post
@@ -39,8 +40,11 @@ router.get("/", auth, async (req, res) => {
 // @desc Get all timeline posts
 // @access Private
 router.get("/timeline", auth, async (req, res) => {
+  const user = await User.findById(req.user._id).select("-password");
+
   const { search } = req.query;
   const query = {};
+  query.author = { $in: [...user.following, req.user._id] };
   if (search) {
     query.$or = [{ content: { $regex: search, $options: "i" } }];
   }
