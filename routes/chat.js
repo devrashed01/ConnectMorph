@@ -6,6 +6,22 @@ const Chat = require("../models/Chat");
 const Message = require("../models/Message");
 const User = require("../models/User");
 
+// @route GET api/chat
+// @desc Get all chats
+// @access Private
+route.get("/", auth, async (req, res) => {
+  const chats = await Chat.find({
+    participants: req.user._id,
+  })
+    .select("participants")
+    .populate({
+      path: "participants",
+      select: USER_PUBLIC_ENTRIES,
+    });
+
+  res.json(chats);
+});
+
 // @route GET api/chat/:id
 // @desc Get a chat
 // @access Private

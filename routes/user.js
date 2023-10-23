@@ -291,7 +291,7 @@ router.get("/friends", auth, async (req, res) => {
 
   if (user.friends.length === 0) return res.json({ message: "No friends" });
 
-  res.json(user.friends);
+  res.json({ friends: user.friends });
 });
 
 module.exports = router;
