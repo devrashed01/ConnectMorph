@@ -50,6 +50,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/uploads", express.static("uploads/"));
 
+// init socket io middleware
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
+
 // routes
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");

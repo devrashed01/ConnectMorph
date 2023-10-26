@@ -19,6 +19,7 @@ router.post("/", auth, [body("content").notEmpty()], async (req, res) => {
     author: req.user._id,
   });
   await post.save();
+
   res.status(201).json({ message: "Post created successfully", post });
 });
 
