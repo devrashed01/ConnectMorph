@@ -277,7 +277,7 @@ router.get("/friend-requests", auth, async (req, res) => {
   if (user.friendRequests.length === 0)
     return res.json({ message: "No friend requests" });
 
-  res.json(user.friendRequests);
+  res.json({ data: user.friendRequests });
 });
 
 // @route GET api/user/friends
@@ -292,6 +292,23 @@ router.get("/friends", auth, async (req, res) => {
   if (user.friends.length === 0) return res.json({ message: "No friends" });
 
   res.json({ friends: user.friends });
+});
+
+// @route GET api/user/you-may-know
+// @desc Get you-may-know users
+// @access Private
+router.get("/you-may-know", auth, async (req, res) => {
+  let query = {
+    _id: { $nin: req.user._id },
+    followers: { $nin: req.user._id },
+    following: { $nin: req.user._id },
+    friendRequests: { $nin: req.user._id },
+    friends: { $nin: req.user._id },
+  };
+  const users = await User.find(query).select(USER_PUBLIC_ENTRIES);
+  if (!users) return res.status(404).json({ message: "No users found" });
+
+  res.json({ data: users });
 });
 
 module.exports = router;
