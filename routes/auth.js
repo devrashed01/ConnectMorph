@@ -12,8 +12,10 @@ router.post(
   [
     check("username", "Username is required").not().isEmpty(),
     check("email", "Please include a valid email").isEmail(),
-    check("phone", "Please include a valid phone number").isMobilePhone(),
-    check("name", "Name is required").not().isEmpty(),
+    check("phone", "Please include a valid phone number")
+      .isMobilePhone()
+      .optional(),
+    check("name", "Name is required").isString(),
     check("password", "Password must be at least 6 characters").isLength({
       min: 6,
     }),
@@ -56,7 +58,7 @@ router.post(
 router.post(
   "/login",
   [
-    check("email", "Please include a valid email").isEmail(),
+    check("username", "Username is required").not().isEmpty(),
     check("password", "Password must be at least 6 characters").isLength({
       min: 6,
     }),
@@ -70,10 +72,10 @@ router.post(
         .json({ errors: errors.array(), message: "Invalid credentials" });
 
     // destructure request body
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     // check if user exists
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ username });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
     // check if password matches
